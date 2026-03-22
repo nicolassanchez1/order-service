@@ -4,35 +4,38 @@ import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CommunicationHelper } from './helpers/communication';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    private readonly communicationHelper: CommunicationHelper,
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const MOCK_UNIT_PRICE = 150.0;
-
     let totalAmount = 0;
+    const orderItems: OrderItem[] = [];
 
-    const items = createOrderDto.items.map((itemDto) => {
-      const itemTotal = itemDto.quantity * MOCK_UNIT_PRICE;
+    for (const itemDto of createOrderDto.items) {
+      const product = await this.communicationHelper.fetchProductFromGateway(itemDto.productId);
+
+      const itemTotal = itemDto.quantity * product.price;
       totalAmount += itemTotal;
 
       const orderItem = new OrderItem();
       orderItem.productId = itemDto.productId;
       orderItem.quantity = itemDto.quantity;
-      orderItem.unitPrice = MOCK_UNIT_PRICE;
+      orderItem.unitPrice = product.price;
 
-      return orderItem;
-    });
+      orderItems.push(orderItem);
+    }
 
     const order = this.orderRepository.create({
       customerName: createOrderDto.customerName,
       totalAmount,
-      items,
+      items: orderItems,
     });
 
     return await this.orderRepository.save(order);
