@@ -36,3 +36,19 @@ jobs:
           echo "Triggering live deployment on Render..."
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
           echo "Deployment triggered successfully."
+
+  versioning-and-changelog:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Automatic version bump and Changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          output-file: 'CHANGELOG.md'
