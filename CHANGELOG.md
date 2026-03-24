@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/nicolassanchez1/order-service/compare/v0.2.0...v0.3.0) (2026-03-24)
+
+
+### Features
+
+* validate SSL ([a4d7dfc](https://github.com/nicolassanchez1/order-service/commit/a4d7dfc4bdbdb31b0e7d031f4ab907792c5c8e6f))
+
+
+
 # [0.2.0](https://github.com/nicolassanchez1/order-service/compare/v0.1.0...v0.2.0) (2026-03-24)
 
 
