@@ -4,12 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module';
 import { JwtStrategy } from './auth/jwt.strategy';
-import { EnvConfiguration } from 'env.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [EnvConfiguration],
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({

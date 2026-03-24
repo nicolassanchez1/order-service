@@ -1,98 +1,94 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Plataforma E-commerce Backend (Microservicios)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este proyecto es una plataforma de e-commerce simplificada desarrollada con NestJS, implementando una arquitectura de microservicios, bases de datos relacionales (PostgreSQL) y un pipeline de CI/CD automatizado.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🏗️ 1. Arquitectura de la Solución
 
-## Description
+La plataforma está diseñada bajo una arquitectura de microservicios orientada a eventos síncronos (HTTP/REST) para garantizar la separación de responsabilidades, escalabilidad independiente y mantenibilidad.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **API Gateway:** Punto de entrada único que orquesta las peticiones del frontend, maneja el enrutamiento inverso y valida los tokens JWT de forma global.
+- **Auth Service:** Microservicio encargado de la autenticación y emisión de JWTs.
+- **Products Service:** Gestiona el catálogo, inventario y almacenamiento de imágenes (Base64).
+- **Orders Service:** Procesa las compras, verifica reglas de negocio (stock disponible) y se comunica de forma segura con el catálogo para descontar el inventario tras una orden exitosa.
 
-## Project setup
+## ☁️ 2. Cloud Design & DevOps
 
-```bash
-$ npm install
+**Simulación Cloud / Despliegue:**
+El proyecto está dockerizado para asegurar paridad entre entornos. Para un despliegue cloud real (Render), cada servicio operaría en su propio contenedor, escalando horizontalmente según la demanda, mientras que la base de datos usaría un servicio administrado (Neon).
+
+**Pipeline CI/CD (GitHub Actions):**
+Se configuró un flujo de integración y despliegue continuo que se dispara al integrar código a la rama `main`. El pipeline ejecuta:
+
+1. Setup de Node.js e instalación de dependencias.
+2. Ejecución de Linters para calidad de código.
+3. Build de la aplicación.
+4. Despliegue automatizado mediante Webhooks (Simulado para Render).
+5. Generación automática de versiones (Semantic Versioning) y `CHANGELOG.md` basado en Conventional Commits.
+
+## 🗄️ 3. Diagrama Entidad-Relación (ERD)
+
+```mermaid
+erDiagram
+    USER ||--o{ ORDER : places
+    USER {
+        uuid id PK
+        string email
+        string name
+        string password
+    }
+    PRODUCT ||--o{ ORDER_ITEM : included_in
+    PRODUCT {
+        uuid id PK
+        uuid userId FK
+        string name
+        decimal price
+        int stock
+        text image
+    }
+    ORDER ||--|{ ORDER_ITEM : contains
+    ORDER {
+        uuid id PK
+        uuid userId FK
+        string customerName
+        decimal totalAmount
+        timestamp createdAt
+    }
+    ORDER_ITEM {
+        uuid id PK
+        uuid orderId FK
+        uuid productId FK
+        int quantity
+        decimal unitPrice
+    }
 ```
 
-## Compile and run the project
+## 🧠 4. Decisiones Técnicas Relevantes
+
+- Persistencia sin estado (Stateless): ➔ Las imágenes de los productos se guardan en formato Base64 directamente en la base de datos (columna text). Esto elimina la dependencia del sistema de archivos local, permitiendo que los contenedores sean verdaderamente efímeros y escalables en la nube.
+- Defensa en Profundidad (Seguridad):➔ La autenticación no solo ocurre en el API Gateway. Los microservicios validan el JWT internamente y filtran las consultas a nivel de base de datos (where: { userId }) para evitar filtración de datos entre inquilinos.
+- Transacciones Distribuidas (Coreografías): ➔ El orders-service inyecta el token de sesión y realiza llamadas seguras al products-service para actualizar el stock dinámicamente, validando reglas de negocio antes de persistir la orden.
+
+## 🚀 5. Instrucciones de Instalación y Ejecución
+
+Prerrequisitos
+Node.js (v18+)
+
+Docker y Docker Compose
+
+PostgreSQL (si se corre fuera de Docker)
+
+Pasos para ejecutar localmente
+
+1. Clonar el repositorio
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/nicolassanchez1/order-service.git
+cd order-service
 ```
 
-## Run tests
+2. Configurar Variables de Entorno
+  - Crear un archivo .env en cada microservicio basándose en el .env.example proporcionado (Credenciales de DB, Secretos JWT, Puertos).
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+3. Documentación de API
+  - Una vez en ejecución, puedes explorar e interactuar con los endpoints usando la integración nativa de Swagger:
+  * Orders API: http://localhost:3001/api
