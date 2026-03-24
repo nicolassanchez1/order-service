@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { OrdersModule } from './orders/orders.module';
         },
       }),
     }),
+    JwtModule.register({ secret: process.env.JWT_SECRET || 'secret-key' }),
     OrdersModule,
   ],
+  providers: [JwtStrategy],
 })
 export class AppModule {}

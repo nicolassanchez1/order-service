@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested, IsNumber, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class CreateOrderItemDto {
@@ -13,7 +13,7 @@ class CreateOrderItemDto {
 
 export class CreateOrderDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   customerName: string;
 
   @IsArray()
