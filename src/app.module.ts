@@ -22,7 +22,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
         synchronize: true,
-        ssl: true,
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
         extra: {
           ssl: {
             rejectUnauthorized: false,
