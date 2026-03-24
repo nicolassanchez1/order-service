@@ -12,7 +12,7 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ example: 1, description: 'User ID' })
+  @ApiProperty({ example: 'b8b1e9c-c5a7-48b0-8b9d-a7241acc0518', description: 'User ID' })
   @Column()
   userId: string;
 

@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Request,
+  Headers,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,19 +24,24 @@ export class OrdersController {
 
   @Post()
   @ApiStandardResponse(Order)
-  create(@Body() createOrderDto: CreateOrderDto, @Request() req) {
+  create(
+    @Body() createOrderDto: CreateOrderDto,
+    @Request() req,
+    @Headers('authorization') authHeader: string,
+  ) {
     const user = req.user;
     const orderData = {
       ...createOrderDto,
       customerName: user.name,
     };
-    return this.ordersService.create(orderData, user.userId);
+    return this.ordersService.create(orderData, user.userId, authHeader);
   }
 
   @Get()
   @ApiStandardResponse()
-  findAll() {
-    return this.ordersService.findAll();
+  findAll(@Request() req) {
+    const user = req.user;
+    return this.ordersService.findAll(user.userId);
   }
 
   @Get(':id')

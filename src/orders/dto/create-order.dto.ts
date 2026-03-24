@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsArray, ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class CreateOrderItemDto {
+export class CreateOrderItemDto {
   @ApiProperty({
     example: 'b8b1e9c-c5a7-48b0-8b9d-a7241acc0518',
     description: 'Product ID',
