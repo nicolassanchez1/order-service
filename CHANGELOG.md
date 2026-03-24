@@ -1,4 +1,24 @@
-# 0.1.0 (2026-03-22)
+# [0.2.0](https://github.com/nicolassanchez1/order-service/compare/v0.1.0...v0.2.0) (2026-03-24)
+
+
+### Bug Fixes
+
+* linter errors ([d91977b](https://github.com/nicolassanchez1/order-service/commit/d91977ba7a98bcf209ebe3f2eef5bcea0141555f))
+* linter errors ([2d68d86](https://github.com/nicolassanchez1/order-service/commit/2d68d860672bea89b9202a6172292553c50b1d83))
+
+
+### Features
+
+* add API_GATEWAY_URL to env.example ([886d483](https://github.com/nicolassanchez1/order-service/commit/886d483c6f8f09aa733922b883102dc6ea939e1d))
+* add userId property ([bbaa9e1](https://github.com/nicolassanchez1/order-service/commit/bbaa9e17598f0546b3c61bed898400109e1794cf))
+* extract inter-service communication to a dedicated helper routing through api gateway ([5e331c4](https://github.com/nicolassanchez1/order-service/commit/5e331c4f7087e55e0ce3817f796ce7ad8ca33c48))
+* implement swagger documentation ([217d17e](https://github.com/nicolassanchez1/order-service/commit/217d17eb33098ac9b6e8ffa3f3daebaa4c100f2e))
+* integrate and validate JWT ([4e20c06](https://github.com/nicolassanchez1/order-service/commit/4e20c06e9d2d64fa106559ffb376bf7fc7363396))
+* refactor code and use product interface ([574b70b](https://github.com/nicolassanchez1/order-service/commit/574b70ba6a6f2bd26a0f084f16ac8169e6c9df00))
+
+
+
+# [0.1.0](https://github.com/nicolassanchez1/order-service/compare/5f77d65c0c3eb295e0622be1fa1aab35f44e5efe...v0.1.0) (2026-03-22)
 
 
 ### Bug Fixes
