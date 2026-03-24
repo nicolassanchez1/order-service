@@ -1,94 +1,83 @@
-# Plataforma E-commerce Backend (Microservicios)
+# 🛒 Orders Microservice - LinkTic Technical Test
 
-Este proyecto es una plataforma de e-commerce simplificada desarrollada con NestJS, implementando una arquitectura de microservicios, bases de datos relacionales (PostgreSQL) y un pipeline de CI/CD automatizado.
+Este repositorio contiene el microservicio de **Órdenes**, el motor transaccional del ecosistema de la prueba técnica de LinkTic.
 
-## 🏗️ 1. Arquitectura de la Solución
+Desarrollado en **NestJS 11**, este servicio es responsable de procesar las compras, verificar las reglas de negocio y comunicarse de forma segura con el catálogo para descontar el inventario tras una orden exitosa. Está diseñado bajo una arquitectura orientada a eventos síncronos (REST) y delega la orquestación principal al API Gateway.
 
-La plataforma está diseñada bajo una arquitectura de microservicios orientada a eventos síncronos (HTTP/REST) para garantizar la separación de responsabilidades, escalabilidad independiente y mantenibilidad.
+## 🏗️ Arquitectura y Rol
 
-- **API Gateway:** Punto de entrada único que orquesta las peticiones del frontend, maneja el enrutamiento inverso y valida los tokens JWT de forma global.
-- **Auth Service:** Microservicio encargado de la autenticación y emisión de JWTs.
-- **Products Service:** Gestiona el catálogo, inventario y almacenamiento de imágenes (Base64).
-- **Orders Service:** Procesa las compras, verifica reglas de negocio (stock disponible) y se comunica de forma segura con el catálogo para descontar el inventario tras una orden exitosa.
+Dentro del patrón de microservicios, este componente opera en el puerto `:3001` (por defecto) y maneja su propio dominio de datos.
 
-## ☁️ 2. Cloud Design & DevOps
+- **Lecturas (Protegidas):** Permite a los clientes consultar su historial de compras de forma aislada (un usuario no puede ver las órdenes de otro).
+- **Escrituras (Transaccionales):** Procesa la creación de órdenes. Este servicio inyecta el token de sesión y realiza llamadas HTTP (vía el API Gateway) hacia el _Products Service_ para actualizar dinámicamente el stock.
 
-**Simulación Cloud / Despliegue:**
-El proyecto está dockerizado para asegurar paridad entre entornos. Para un despliegue cloud real (Render), cada servicio operaría en su propio contenedor, escalando horizontalmente según la demanda, mientras que la base de datos usaría un servicio administrado (Neon).
+## 🛡️ Características Principales
 
-**Pipeline CI/CD (GitHub Actions):**
-Se configuró un flujo de integración y despliegue continuo que se dispara al integrar código a la rama `main`. El pipeline ejecuta:
+1. **Defensa en Profundidad (Seguridad):** La autenticación no solo ocurre en el API Gateway. Este microservicio valida el JWT internamente y filtra las consultas a nivel de base de datos (`where: { userId }`) para evitar filtración de datos entre inquilinos.
+2. **Transacciones Distribuidas:** Uso de `HttpModule` (Axios) para crear una coreografía entre microservicios, asegurando que el stock se descuente correctamente al registrar una orden.
+3. **Validación de Datos:** Uso de DTOs (`CreateOrderDto`) y `ParseUUIDPipe` para garantizar la integridad de la información entrante.
+4. **Documentación Swagger:** Decoradores de `@nestjs/swagger` implementados para autogenerar la especificación de la API.
 
-1. Setup de Node.js e instalación de dependencias.
-2. Ejecución de Linters para calidad de código.
-3. Build de la aplicación.
-4. Despliegue automatizado mediante Webhooks (Simulado para Render).
-5. Generación automática de versiones (Semantic Versioning) y `CHANGELOG.md` basado en Conventional Commits.
+## ⚙️ Configuración del Entorno (.env)
 
-## 🗄️ 3. Diagrama Entidad-Relación (ERD)
+Crea un archivo `.env` en la raíz de este microservicio. Las variables mínimas recomendadas son:
 
-```mermaid
-erDiagram
-    USER ||--o{ ORDER : places
-    USER {
-        uuid id PK
-        string email
-        string name
-        string password
-    }
-    PRODUCT ||--o{ ORDER_ITEM : included_in
-    PRODUCT {
-        uuid id PK
-        uuid userId FK
-        string name
-        decimal price
-        int stock
-        text image
-    }
-    ORDER ||--|{ ORDER_ITEM : contains
-    ORDER {
-        uuid id PK
-        uuid userId FK
-        string customerName
-        decimal totalAmount
-        timestamp createdAt
-    }
-    ORDER_ITEM {
-        uuid id PK
-        uuid orderId FK
-        uuid productId FK
-        int quantity
-        decimal unitPrice
-    }
+```env
+DB_HOST=postgres://usuario:password@localhost:5432/products_db (Ejemplo)
+DB_PORT=5432
+DB_USERNAME=neondb_owner
+DB_PASSWORD=npg_D9qgUOu7Ndai
+DB_NAME=neondb
+API_GATEWAY_URL=https://api-gateway-aslw.onrender.com
+PORT=3001
+JWT_SECRET=secret-key
 ```
 
-## 🧠 4. Decisiones Técnicas Relevantes
+## 🚀 Despliegue y Ejecución
 
-- Persistencia sin estado (Stateless): ➔ Las imágenes de los productos se guardan en formato Base64 directamente en la base de datos (columna text). Esto elimina la dependencia del sistema de archivos local, permitiendo que los contenedores sean verdaderamente efímeros y escalables en la nube.
-- Defensa en Profundidad (Seguridad):➔ La autenticación no solo ocurre en el API Gateway. Los microservicios validan el JWT internamente y filtran las consultas a nivel de base de datos (where: { userId }) para evitar filtración de datos entre inquilinos.
-- Transacciones Distribuidas (Coreografías): ➔ El orders-service inyecta el token de sesión y realiza llamadas seguras al products-service para actualizar el stock dinámicamente, validando reglas de negocio antes de persistir la orden.
+Opción A: Ejecución Local (Desarrollo)
 
-## 🚀 5. Instrucciones de Instalación y Ejecución
-
-Prerrequisitos
-Node.js (v18+)
-
-Docker y Docker Compose
-
-PostgreSQL (si se corre fuera de Docker)
+- Prerrequisitos
+- Node.js (v18+)
+- PostgreSQL
 
 Pasos para ejecutar localmente
 
-1. Clonar el repositorio
+1. Clonar el repositorio e instalar dependencias:
 
 ```bash
-git clone https://github.com/nicolassanchez1/order-service.git
-cd order-service
+# 1. Clonar repositorio
+git clone [https://github.com/nicolassanchez1/order-service.git](https://github.com/nicolassanchez1/order-service.git)
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Levantar el servicio en modo desarrollo
+npm run start:dev
 ```
 
-2. Configurar Variables de Entorno
-  - Crear un archivo .env en cada microservicio basándose en el .env.example proporcionado (Credenciales de DB, Secretos JWT, Puertos).
+2. Explorar la Documentación de la API (Swagger):
 
-3. Documentación de API
-  - Una vez en ejecución, puedes explorar e interactuar con los endpoints usando la integración nativa de Swagger:
-  * Orders API: http://localhost:3001/api
+- Una vez en ejecución, puedes explorar e interactuar con los endpoints usando la integración nativa de Swagger en la siguiente ruta:
+
+* Products API Swagger: http://localhost:3001/api
+
+Opción B: Usando Docker (Producción)
+
+```bash
+# 1. Construir la imagen
+docker build -t orders-service .
+
+# 2. Correr el contenedor
+docker run -p 3001:3001 --env-file .env orders-service
+```
+
+## 🛣️ Enrutamiento y Endpoints
+
+A continuación, se detallan las rutas expuestas por el controlador interno. (Nota: Si consultas a través del API Gateway, la ruta base es `http://localhost:8080/orders).` Todos los endpoints de este microservicio están protegidos globalmente por el decorador `@UseGuards(AuthGuard('jwt')).`
+
+| Métodos | Endpoint      | Descripción                                                      | Seguridad       |
+| :------ | :------------ | :--------------------------------------------------------------- | :-------------- |
+| `GET`   | `/orders`     | ➔ **Obtiene el historial de órdenes del usuario autenticado.**   | 🔒 Requiere JWT |
+| `GET`   | `/orders/:id` | ➔ **Obtiene los detalles de una compra específica..**            | 🔒 Requiere JWT |
+| `POST`  | `/orders`     | ➔ **Procesa una nueva orden y actualiza el stock del catálogo.** | 🔒 Requiere JWT |
