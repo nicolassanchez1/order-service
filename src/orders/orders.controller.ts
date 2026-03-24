@@ -4,9 +4,9 @@ import {
   Post,
   Body,
   Param,
-  ParseIntPipe,
   UseGuards,
   Request,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -29,7 +29,7 @@ export class OrdersController {
       ...createOrderDto,
       customerName: user.name,
     };
-    return this.ordersService.create(orderData);
+    return this.ordersService.create(orderData, user.userId);
   }
 
   @Get()
@@ -40,7 +40,7 @@ export class OrdersController {
 
   @Get(':id')
   @ApiStandardResponse()
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.ordersService.findOne(id);
   }
 }

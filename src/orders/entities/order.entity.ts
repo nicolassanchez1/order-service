@@ -10,7 +10,11 @@ export class Order {
     uniqueItems: true,
   })
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
+
+  @ApiProperty({ example: 1, description: 'User ID' })
+  @Column()
+  userId: string;
 
   @ApiProperty({
     example: 'Nico',

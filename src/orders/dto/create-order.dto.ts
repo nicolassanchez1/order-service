@@ -8,9 +8,8 @@ class CreateOrderItemDto {
     description: 'Product ID',
     uniqueItems: true,
   })
-  @IsNumber()
-  @Min(1)
-  productId: number;
+  @IsString()
+  productId: string;
 
   @ApiProperty({
     example: 10,
@@ -31,6 +30,15 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   customerName: string;
+
+  @ApiProperty({
+    example: '800481e6-9920-47e7-b5b4-de7b787233dd',
+    description: 'User ID',
+    default: '',
+  })
+  @IsString()
+  @IsOptional()
+  userId: string;
 
   @ApiProperty({ type: () => [CreateOrderItemDto] })
   @IsArray()

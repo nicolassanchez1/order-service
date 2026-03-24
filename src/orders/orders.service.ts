@@ -14,7 +14,7 @@ export class OrdersService {
     private readonly communicationHelper: CommunicationHelper,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto): Promise<Order> {
+  async create(createOrderDto: CreateOrderDto, userId: string): Promise<Order> {
     let totalAmount = 0;
     const orderItems: OrderItem[] = [];
 
@@ -33,6 +33,7 @@ export class OrdersService {
     }
 
     const order = this.orderRepository.create({
+      userId,
       customerName: createOrderDto.customerName,
       totalAmount,
       items: orderItems,
@@ -45,7 +46,7 @@ export class OrdersService {
     return await this.orderRepository.find({ relations: ['items'] });
   }
 
-  async findOne(id: number): Promise<Order> {
+  async findOne(id: string): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { id },
       relations: ['items'],

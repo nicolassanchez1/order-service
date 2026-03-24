@@ -10,7 +10,7 @@ export class OrderItem {
     uniqueItems: true,
   })
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @ApiProperty({
     example: 'c8t1e9c-c5a7-48b0-8b9d-a7241acc0511',
@@ -18,7 +18,7 @@ export class OrderItem {
     uniqueItems: true,
   })
   @Column()
-  productId: number;
+  productId: string;
 
   @ApiProperty({
     example: 5,

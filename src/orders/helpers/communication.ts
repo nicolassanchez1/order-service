@@ -15,7 +15,7 @@ export class CommunicationHelper {
     this.gatewayUrl = configService.get<string>('API_GATEWAY_URL') || 'http://localhost:8080';
   }
 
-  async fetchProductFromGateway(productId: number): Promise<any> {
+  async fetchProductFromGateway(productId: string): Promise<any> {
     try {
       this.logger.log(`Calling API Gateway to fetch product ${productId}...`);
 
