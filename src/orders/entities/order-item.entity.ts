@@ -23,7 +23,7 @@ export class OrderItem {
   @ApiProperty({
     example: 5,
     description: 'Product quantity',
-    default: 0
+    default: 0,
   })
   @Column()
   quantity: number;
@@ -31,7 +31,7 @@ export class OrderItem {
   @ApiProperty({
     example: 200,
     description: 'Product unit orice',
-    default: 0
+    default: 0,
   })
   @Column('decimal', { precision: 10, scale: 2 })
   unitPrice: number;

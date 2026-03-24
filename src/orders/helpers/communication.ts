@@ -21,12 +21,14 @@ export class CommunicationHelper {
       this.logger.log(`Calling API Gateway to fetch product ${productId}...`);
 
       const response = await firstValueFrom(
-        this.httpService.get(`${this.gatewayUrl}/products/${productId}`),
+        this.httpService.get<IProduct>(`${this.gatewayUrl}/products/${productId}`),
       );
 
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to fetch product ${productId} in Gateway`, error.message);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error de validación desconocido';
+      this.logger.error(`Failed to fetch product ${productId} in Gateway`, errorMessage);
       throw new BadRequestException(`Product with ID ${productId} is invalid or does not exist`);
     }
   }
@@ -42,12 +44,14 @@ export class CommunicationHelper {
         : {};
 
       const response = await firstValueFrom(
-        this.httpService.patch(`${this.gatewayUrl}/products/${productId}`, data, config),
+        this.httpService.patch<IProduct>(`${this.gatewayUrl}/products/${productId}`, data, config),
       );
 
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to update product ${productId} in Gateway: ${error.message}`);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error de validación desconocido';
+      this.logger.error(`Failed to update product ${productId} in Gateway: ${errorMessage}`);
       throw new BadRequestException(`No se pudo actualizar el stock del producto ${productId}`);
     }
   }
