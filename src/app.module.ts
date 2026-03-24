@@ -23,11 +23,6 @@ import { JwtStrategy } from './auth/jwt.strategy';
         autoLoadEntities: true,
         synchronize: true,
         ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
-        },
       }),
     }),
     JwtModule.register({ secret: process.env.JWT_SECRET || 'secret-key' }),
