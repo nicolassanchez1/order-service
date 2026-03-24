@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/nicolassanchez1/order-service/compare/v0.3.0...v0.4.0) (2026-03-24)
+
+
+### Features
+
+* remove extra SSL ([372b475](https://github.com/nicolassanchez1/order-service/commit/372b475c76dc873cf6802cf6b45096180e8f0fb1))
+
+
+
 # [0.3.0](https://github.com/nicolassanchez1/order-service/compare/v0.2.0...v0.3.0) (2026-03-24)
 
 
