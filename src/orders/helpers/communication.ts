@@ -12,7 +12,7 @@ export class CommunicationHelper {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.gatewayUrl = this.configService.get<string>('API_GATEWAY_URL') || 'http://localhost:8080';
+    this.gatewayUrl = configService.get<string>('API_GATEWAY_URL') || 'http://localhost:8080';
   }
 
   async fetchProductFromGateway(productId: number): Promise<any> {
@@ -25,7 +25,7 @@ export class CommunicationHelper {
 
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to fetch product ${productId} via Gateway`, error.message);
+      this.logger.error(`Failed to fetch product ${productId} in Gateway`, error.message);
       throw new BadRequestException(`Product with ID ${productId} is invalid or does not exist`);
     }
   }

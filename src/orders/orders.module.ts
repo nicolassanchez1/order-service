@@ -9,7 +9,7 @@ import { OrderItem } from './entities/order-item.entity';
 import { CommunicationHelper } from './helpers/communication';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderItem]), HttpModule, ConfigModule],
+  imports: [ConfigModule, TypeOrmModule.forFeature([Order, OrderItem]), HttpModule, ConfigModule],
   controllers: [OrdersController],
   providers: [OrdersService, CommunicationHelper],
 })
